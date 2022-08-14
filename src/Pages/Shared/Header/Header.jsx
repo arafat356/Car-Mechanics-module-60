@@ -1,8 +1,10 @@
 import React from 'react';
 import { Link, Navigate } from 'react-router-dom';
-import { Container, Nav, Navbar } from 'react-bootstrap';
+import { Container, Nav, Navbar, Button } from 'react-bootstrap';
+import useAuth from '../../../hooks/useAuth';
 
 const Header = () => {
+  const { user, logOut } = useAuth();
   return (
     <>
       <Navbar
@@ -33,11 +35,21 @@ const Header = () => {
             <Nav.Link as={Link} className="text-success p-4" to="/home#experts">
               Experts
             </Nav.Link>
-            <Nav.Link as={Link} className="text-primary p-4" to="/login">
-              Login
-            </Nav.Link>
+
+            {/* here's condition  */}
+            {user?.email ? (
+              <Button onClick={logOut} variant="info">
+                Log Out
+              </Button>
+            ) : (
+              <Nav.Link as={Link} className="text-primary p-4" to="/login">
+                Login
+              </Nav.Link>
+            )}
+
+            {/* end  */}
             <Navbar.Text>
-              Signed in as: <a href="#login">Mark Otto</a>
+              Signed in as: <a href="#login">{user.displayName}</a>
             </Navbar.Text>
           </Navbar.Collapse>
         </Container>

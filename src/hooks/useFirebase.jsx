@@ -7,17 +7,26 @@ import {
   unsubscribed,
 } from 'firebase/auth';
 import { useEffect, useState } from 'react';
+import initializeAuthentication from '../Pages/Login/Firebase/firebase.init';
+
+initializeAuthentication();
 
 const useFirebase = () => {
   const [user, setUser] = useState({});
-  // GoogleSignIn
+  const [isLoading, setIsLoading] = useState(true);
+
   const auth = getAuth();
+  // GoogleSignIn
+
   const signInUsingGoogle = () => {
+    setIsLoading(true);
     const googleProvider = new GoogleAuthProvider();
     // Show Popup
-    signInWithPopup(auth, googleProvider).then((result) => {
-      setUser(result.user);
-    });
+    signInWithPopup(auth, googleProvider)
+      .then((result) => {
+        setUser(result.user);
+      })
+      .finally(() => setIsLoading(false));
   };
   // onAuthStateChanged
   //   observe user state change
@@ -28,13 +37,17 @@ const useFirebase = () => {
       } else {
         setUser({});
       }
+      setIsLoading(false);
     });
     return () => unsubscribed;
   }, []);
 
   // signOut
   const logOut = () => {
-    signOut(auth).then(() => {});
+    setIsLoading(true);
+    signOut(auth)
+      .then(() => {})
+      .finally(() => setIsLoading(false));
   };
 
   //   here's return
@@ -44,3 +57,5 @@ const useFirebase = () => {
     logOut,
   };
 };
+
+export default useFirebase;
